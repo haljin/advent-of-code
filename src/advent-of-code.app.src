@@ -1,0 +1,18 @@
+%%%-------------------------------------------------------------------
+%%% @author vdw678
+%%% @copyright (C) 2015, <COMPANY>
+%%% @doc
+%%%
+%%% @end
+%%% Created : 25. dec 2015 22:58
+%%%-------------------------------------------------------------------
+{ application, 'advent-of-code', [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+    kernel,
+    stdlib
+  ]},
+  {env, []}
+]}.
