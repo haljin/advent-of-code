@@ -16,7 +16,7 @@
                 effect,
                 value}).
 
--record(node, {turn = player, player, boss, summary_cost, spell, effects, chain = []}).
+-record(node, {player, boss, summary_cost, spell, effects, chain = []}).
 
 -define(SPELLS, [#spell{name = "Magic Missile", cost = 53, effect = damage, value = 4},
                  #spell{name = "Drain", cost =  73, effect = drain, value = 2},
@@ -48,68 +48,67 @@ solve2(Boss) ->
   Nodes = [#node{player = ?PLAYER_HARD, boss = Boss, spell = Spell, effects = [], summary_cost = 0} || Spell <- ?SPELLS],
   game_tree(Nodes, ?SPELLS, undefined).
 
+
+player_preturn(#node{player = Player, boss = Boss, effects = Effects, summary_cost = Total} = N) ->
+  case {apply_effects(Player, Effects), apply_effects(Boss, Effects)} of
+    {#stats{hp = PlayerHP}, _} when PlayerHP =< 0 ->
+      lost;
+    {_, #stats{hp = BossHP}} when BossHP =< 0 ->
+      {win, Total};
+    {PlayerTurnPlayer, PlayerTurnBoss} ->
+      PlayerTurnEffects = [E#spell{duration = D - 1} || #spell{duration = D} = E <- Effects, D > 1],
+      player_turn(N#node{player = PlayerTurnPlayer, boss = PlayerTurnBoss, effects = PlayerTurnEffects})
+  end.
+
+player_turn(#node{player = #stats{mana = Mana}, spell = #spell{cost = Cost}}) when Cost > Mana ->
+  lost;
+player_turn(#node{player = Player, boss = Boss, effects = Effects, spell = Spell, summary_cost = Total} = N) ->
+  {EndPlayer, EndBoss, EndEffects} = apply_spell(Player, Boss, Effects, Spell),
+  EndTotal = Total + Spell#spell.cost,
+  case EndBoss#stats.hp of
+    BossHp when BossHp =< 0 ->
+      {win, EndTotal};
+    _ ->
+      boss_preturn(N#node{player = EndPlayer#stats{armor = 0}, boss = EndBoss, effects = EndEffects, summary_cost = EndTotal})
+  end.
+
+boss_preturn(#node{player = Player, boss = Boss, effects = Effects, summary_cost = Total} = N) ->
+  case {apply_effects(Player#stats{hp = Player#stats.hp + Player#stats.handicap}, Effects), apply_effects(Boss, Effects)} of
+    {_, #stats{hp = BossHP}} when BossHP =< 0 ->
+      {win, Total};
+    {BossTurnPlayer, BossTurnBoss} ->
+      BossTurnEffects = [E#spell{duration = D - 1} || #spell{duration = D} = E <- Effects, D > 1],
+      boss_turn(N#node{player = BossTurnPlayer, boss = BossTurnBoss, effects = BossTurnEffects})
+  end.
+
+boss_turn(#node{player = Player, boss = Boss} = N) ->
+  EndPlayer = apply_boss_damage(Player, Boss),
+  case EndPlayer#stats.hp of
+    PlayerHp when PlayerHp =< 0 ->
+      lost;
+    _ ->
+      {node, N#node{player = EndPlayer#stats{armor = 0}}}
+  end.
+
 game_tree([], _, CurrentBest) ->
-  io:format("Best: ~p~n", [CurrentBest]);
-game_tree([#node{turn = player,
-                 summary_cost = Cost} | Rest], AllSpells, CurrentBest) when (CurrentBest =/= undefined),
+  CurrentBest;
+game_tree([#node{summary_cost = Cost} | Rest], AllSpells, CurrentBest) when (CurrentBest =/= undefined),
                                                                             (Cost >= CurrentBest)  ->
   game_tree(Rest, AllSpells, CurrentBest);
-game_tree([#node{turn = player,
-                 player = #stats {hp = Hp, handicap = Handicap} = Player,
-                 boss = Boss,
-                 spell = Spell,
-                 effects = Effects,
-                 summary_cost = Total} = N | Rest], AllSpells, CurrentBest) ->
- case {apply_effects(Player#stats{hp = Hp + Handicap}, Effects), apply_effects(Boss, Effects)} of
-   {#stats{hp = PlayerHP}, _} when PlayerHP =< 0 ->
-     game_tree(Rest, AllSpells, CurrentBest);
-   {_, #stats{hp = BossHP}} when BossHP =< 0 ->
-     io:format("Found a win ~p with ~p ~n", [Total, N#node.chain]),
-     game_tree(Rest, AllSpells, find_best(CurrentBest, Total));
-   {#stats{mana = M}, _} when M < Spell#spell.cost ->
-     game_tree(Rest, AllSpells, CurrentBest);
-   {PlayerTurnPlayer, PlayerTurnBoss} ->
-     PlayerTurnEffects = [E#spell{duration = D - 1} || #spell{duration = D} = E <- Effects, D > 1],
-     {EndPlayer, EndBoss, EndEffects} = apply_spell(PlayerTurnPlayer, PlayerTurnBoss, PlayerTurnEffects, Spell),
-     EndTotal = Total + Spell#spell.cost,
-     case EndBoss#stats.hp of
-       BossHp when BossHp =< 0 ->
-         io:format("Found a win ~p with ~p ~n", [EndTotal, [Spell#spell.name|N#node.chain]]),
-         game_tree(Rest, AllSpells, find_best(CurrentBest, EndTotal));
-       _ ->
-         game_tree([N#node{turn = boss,
-                           player = EndPlayer#stats{armor = 0},
-                           boss = EndBoss,
-                           effects = EndEffects,
-                           chain = [Spell#spell.name|N#node.chain],
-                           summary_cost = EndTotal} | Rest], AllSpells, CurrentBest)
-     end
- end;
-game_tree([#node{turn = boss,
-                 player = Player,
-                 boss = Boss,
-                 effects = Effects,
-                 summary_cost = Total} = N | Rest], AllSpells, CurrentBest) ->
-  BossTurnPlayer = apply_effects(Player, Effects),
-  BossTurnBoss = apply_effects(Boss, Effects),
-  BossTurnEffects = [E#spell{duration = D - 1} || #spell{duration = D} = E <- Effects, D > 1],
-  EndPlayer = apply_boss_damage(BossTurnPlayer, BossTurnBoss),
-  case {EndPlayer#stats.hp, BossTurnBoss#stats.hp} of
-    {_, BossHp} when BossHp =< 0 ->
-      io:format("Found a win ~p with ~p ~n", [Total, N#node.chain]),
-      game_tree(Rest, AllSpells, find_best(CurrentBest, Total));
-    {PlayerHp, _} when PlayerHp =< 0 ->
+game_tree([Node | Rest], AllSpells, CurrentBest) ->
+  case player_preturn(Node) of
+    lost ->
       game_tree(Rest, AllSpells, CurrentBest);
-    {_PlayerHp, _BossHp} ->
-      PossibleSpells =  [E ||#spell{duration = D} = E <- BossTurnEffects, D > 1],
-      Branches = [#node{spell = Sp,
-                        player = EndPlayer#stats{armor = 0},
-                        boss = BossTurnBoss,
-                        effects = BossTurnEffects,
-                        summary_cost = Total,
-                        chain = N#node.chain}
+    {win, Total} ->
+      io:format("A win ~p ~p~n", [Total, Node#node.chain]),
+      game_tree(Rest, AllSpells, find_best(CurrentBest, Total));
+    {node, EndNode} ->
+      PossibleSpells =  [E ||#spell{duration = D} = E <- EndNode#node.effects, D > 1],
+      Branches = [EndNode#node{spell = Sp,
+                               chain = [Sp#spell.name | EndNode#node.chain]}
                   || #spell{name = SN} = Sp <- AllSpells, not lists:keymember(SN, #spell.name, PossibleSpells)],
       game_tree(Branches ++ Rest, AllSpells, CurrentBest)
+
   end.
 
 apply_spell(#stats{mana = Mana} = Player, #stats{} = Boss, Effects,
