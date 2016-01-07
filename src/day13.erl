@@ -1,3 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  In each seating each person is a process that is informed of its neighbours.
+%%  In retrospect - they should not have been registered, that way it's possible
+%%  to spawn all possible seating combinations at once and get results much faster.
+%%
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day13).
 
 -compile(export_all).

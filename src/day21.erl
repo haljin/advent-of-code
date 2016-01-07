@@ -1,3 +1,12 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  Here's what Day 13 should have done. For each possible equipment combination
+%%  a game process is started that spawns a player and boss processes that
+%%  fight each other. If one of them is killed a result process is notified.
+%%
+%%  Once all games exit we have the result.
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day21).
 
 -compile(export_all).

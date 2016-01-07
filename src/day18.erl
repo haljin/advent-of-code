@@ -1,3 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  Once again the lights and once again each light is its own process. A central
+%%  "clock" process is notifying all lights to change their state and awaits
+%%  their confirmation that it is done. Afterwards it notifies again, until
+%%  it executes as many steps as needed.
+%%
+%%  Each light, in turn, when notified to switch sends its status to all its
+%%  neighbours and then collects their messages. Once all the neighbour states
+%%  are known it can change state and notify the central process.
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day18).
 
 -compile(export_all).

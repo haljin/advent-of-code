@@ -1,3 +1,14 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  Once again - each house and each elf are a process. Elves simply send gifts
+%%  to houses and once a house has enough gifts it notifies the result process.
+%%
+%%  This is quite a bit asynchronous, so the first result message might not be
+%%  the actual answer. After some time result can be queried manually to get
+%%  the answer, but in reality should probably check the answers when all the
+%%  elves have quit.
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day20).
 
 -compile(export_all).

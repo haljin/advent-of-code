@@ -1,3 +1,10 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  This one is fun, CPU modelled in Erlang. Each register is a process, the
+%%  memory is a process that serves code under specified addresses. The commands
+%%  are parsed and executed but yet another process.
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day23).
 
 -compile(export_all).

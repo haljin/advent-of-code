@@ -1,3 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  While part 1 is simple, part 2 is quite tricky. It works by doing a greedy
+%%  replacement, always trying the longest sequence first. While it works in
+%%  this case, in no way does it guarantee a solution. A realy solution however
+%%  results in a rather large tree search, that is quite inefficient.
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day19).
 
 -compile(export_all).

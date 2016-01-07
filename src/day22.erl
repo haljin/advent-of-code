@@ -1,3 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  @doc
+%%  I solved this one before I figured out how to parallelize it. It generates
+%%  a large "decision" tree with each of the spells that can be cast at any given
+%%  point of time. It does so generating the tree dynamically while performing
+%%  a DFS on it. Thanks to branch pruning this executes in ok time. The branches
+%%  are pruned if:
+%%  - The player dies
+%%  - The boss dies
+%%  - The player is out of mana
+%%  - The game continues but the total cost exceeds the minimal solution that
+%%    was already found before.
+%%
+%%  This COULD be parallelized. Instead of search through the tree in a single
+%%  thread, each time new branches are generated, they could be spawned as
+%%  sub-processes that would continue sub-processing. Pruning the 4th condition
+%%  can become slightly tricky due to the asynchronous nature of such solutions.
+%%  Not sure it is worth it that much.
+%%
+%%  @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(day22).
 
 -compile(export_all).
