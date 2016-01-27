@@ -71,7 +71,7 @@ solve2(Boss) ->
 
 
 player_preturn(#node{player = Player, boss = Boss, effects = Effects, summary_cost = Total} = N) ->
-  case {apply_effects(Player, Effects), apply_effects(Boss, Effects)} of
+  case {apply_effects(Player#stats{hp = Player#stats.hp + Player#stats.handicap}, Effects), apply_effects(Boss, Effects)} of
     {#stats{hp = PlayerHP}, _} when PlayerHP =< 0 ->
       lost;
     {_, #stats{hp = BossHP}} when BossHP =< 0 ->
@@ -94,7 +94,7 @@ player_turn(#node{player = Player, boss = Boss, effects = Effects, spell = Spell
   end.
 
 boss_preturn(#node{player = Player, boss = Boss, effects = Effects, summary_cost = Total} = N) ->
-  case {apply_effects(Player#stats{hp = Player#stats.hp + Player#stats.handicap}, Effects), apply_effects(Boss, Effects)} of
+  case {apply_effects(Player, Effects), apply_effects(Boss, Effects)} of
     {_, #stats{hp = BossHP}} when BossHP =< 0 ->
       {win, Total};
     {BossTurnPlayer, BossTurnBoss} ->
@@ -116,17 +116,17 @@ game_tree([], _, CurrentBest) ->
 game_tree([#node{summary_cost = Cost} | Rest], AllSpells, CurrentBest) when (CurrentBest =/= undefined),
                                                                             (Cost >= CurrentBest)  ->
   game_tree(Rest, AllSpells, CurrentBest);
-game_tree([Node | Rest], AllSpells, CurrentBest) ->
+game_tree([#node{spell = OriginalSpell} = Node | Rest], AllSpells, CurrentBest) ->
   case player_preturn(Node) of
     lost ->
       game_tree(Rest, AllSpells, CurrentBest);
     {win, Total} ->
-      io:format("A win ~p ~p~n", [Total, Node#node.chain]),
+      io:format("A win ~p ~p ~p ~n", [Total, Node#node.chain, Node]),
       game_tree(Rest, AllSpells, find_best(CurrentBest, Total));
     {node, EndNode} ->
       PossibleSpells =  [E ||#spell{duration = D} = E <- EndNode#node.effects, D > 1],
       Branches = [EndNode#node{spell = Sp,
-                               chain = [Sp#spell.name | EndNode#node.chain]}
+                               chain = [OriginalSpell#spell.name | EndNode#node.chain]}
                   || #spell{name = SN} = Sp <- AllSpells, not lists:keymember(SN, #spell.name, PossibleSpells)],
       game_tree(Branches ++ Rest, AllSpells, CurrentBest)
 
