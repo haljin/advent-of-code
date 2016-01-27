@@ -121,7 +121,7 @@ game_tree([#node{spell = OriginalSpell} = Node | Rest], AllSpells, CurrentBest) 
     lost ->
       game_tree(Rest, AllSpells, CurrentBest);
     {win, Total} ->
-      io:format("A win ~p ~p ~p ~n", [Total, Node#node.chain, Node]),
+      io:format("A win ~p ~p ~n", [Total, [OriginalSpell#spell.name | Node#node.chain]]),
       game_tree(Rest, AllSpells, find_best(CurrentBest, Total));
     {node, EndNode} ->
       PossibleSpells =  [E ||#spell{duration = D} = E <- EndNode#node.effects, D > 1],
