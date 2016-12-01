@@ -18,7 +18,7 @@ erl +P 2000000
 
 About 2 million process limit should do it, although it never really goes much about one million. :) 
 
-## Lessons learned
+## Lessons learned (2015)
 * Day 6 - The VM has a limit on how many processes can be spawned. This is configurable, but must be remembered.
 * Day 6 - Large ETS tables can be quite slow when performing selects. This may imply gproc may struggle when there's a LOT of processes running, although normally you probably wouldn't store ALL PIDs in one place.
 * Day 20 - Every math problem can be brute-forced with enough processes!

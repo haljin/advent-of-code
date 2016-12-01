@@ -1,5 +1,5 @@
 .idea
-.rebar/
+.rebar
 ebin
 *.iml
 deps

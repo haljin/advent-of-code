@@ -1,4 +1,4 @@
-{ application, 'advent-of-code-2015', [
+{ application, 'advent-of-code-2016', [
   {description, ""},
   {vsn, "1"},
   {registered, []},
