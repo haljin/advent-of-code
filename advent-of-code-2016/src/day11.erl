@@ -9,8 +9,8 @@
                          {4, []}]}).
 
 test_input() ->
-  #state{items = [{1, [{microchip, hydrogen}, {microchip, lithium}, {microchip, thulium}, {microchip, promethium}]},
-                  {2, [{generator, hydrogen}, {generator, thulium}, {generator, promethium}]},
+  #state{items = [{1, [{microchip, hydrogen}, {microchip, lithium}]},
+                  {2, [{generator, hydrogen}]},
                   {3, [{generator, lithium}]},
                   {4, []}]}.
 input() ->
