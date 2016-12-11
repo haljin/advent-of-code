@@ -14,11 +14,11 @@ test_input() ->
                   {3, [{generator, lithium}]},
                   {4, []}]}.
 input() ->
-  #state{items = [{1, [{generator, polonium},
+  #state{items = [{1, lists:sort([{generator, polonium},
                        {generator, thulium}, {microchip, thulium},
                        {generator, promethium}, {generator, ruthenium},
-                       {microchip, ruthenium}, {generator, cobalt}, {microchip, cobalt}]},
-                  {2, [{microchip, polonium}, {microchip, promethium}]},
+                       {microchip, ruthenium}, {generator, cobalt}, {microchip, cobalt}])},
+                  {2, lists:sort([{microchip, polonium}, {microchip, promethium}])},
                   {3, []},
                   {4, []}]}.
 
@@ -34,7 +34,7 @@ solve([{Steps, _State} | Rest], Visited, Min) when Min =/= undefined,
                                                   Min < Steps ->
   solve(Rest, Visited, Min);
 solve([{Steps, State} | Rest], Visited, Min) ->
-%%  io:format("Now investigating ~p ~n", [{Steps, State}]),
+  io:format("Now investigating ~p length of Visited: ~p ~n", [Steps, length(Visited)]),
   case {is_final(State), Min} of
     {true, undefined} ->
       io:format("Found new minimum ~p~n", [Steps]),
@@ -47,21 +47,15 @@ solve([{Steps, State} | Rest], Visited, Min) ->
       NewStates = [{Steps + 1, apply_state_change(Move, State)} || Move <- PossibleMoves],
       FilteredNewStates = [{S, FilteredState} || {S, FilteredState} <- NewStates,
                            valid_state(FilteredState) andalso
-                           not lists:any(fun(PrevVisited) -> are_equal(PrevVisited, FilteredState) end, Visited)],
-      JustStates = [JS || {_, JS} <- FilteredNewStates],
-      solve(Rest ++ FilteredNewStates, Visited ++ JustStates, Min)
+                           not lists:any(fun({PrevStep, PrevState}) -> FilteredState == PrevState andalso PrevStep < Steps + 1 end, Visited)],
+%%      JustStates = [JS || {_, JS} <- FilteredNewStates],
+      solve(FilteredNewStates ++ Rest, FilteredNewStates ++ Visited, Min)
   end.
 
 is_final(#state{items = Items}) ->
   lists:keyfind(3, 1, Items) =:= {3, []} andalso
     lists:keyfind(2, 1, Items) =:= {2, []} andalso
     lists:keyfind(1, 1, Items) =:= {1, []}.
-
-are_equal(#state{floor = Floor1, items = Items1}, #state{floor = Floor2, items = Items2}) ->
-  SortedItems1 = [{Floor, lists:sort(I)} || {Floor, I} <- Items1],
-  SortedItems2 = [{Floor, lists:sort(I)} || {Floor, I} <- Items2],
-  SortedItems1 =:= SortedItems2 andalso Floor1 =:= Floor2.
-
 
 valid_state(#state{items = Items}) ->
   lists:all(fun({_F, ItemsOnFloor}) ->
@@ -79,8 +73,8 @@ apply_state_change({Direction, ItemsToTake}, #state{floor = Floor, items = Items
              end,
   {_, ItemsAtNewFloor} = lists:keyfind(NewFloor, 1, Items),
   State#state{floor = NewFloor,
-              items = lists:keyreplace(NewFloor, 1, lists:keyreplace(Floor, 1, Items, {Floor, ItemsOnFloor -- ItemsToTake}),
-                                       {NewFloor, ItemsAtNewFloor ++ ItemsToTake})}.
+              items = lists:keyreplace(NewFloor, 1, lists:keyreplace(Floor, 1, Items, {Floor, lists:sort(ItemsOnFloor -- ItemsToTake)}),
+                                       {NewFloor, lists:sort(ItemsAtNewFloor ++ ItemsToTake)})}.
 
 possible_moves(State) ->
   [{Direction, ItemsToTake} || Direction <- possible_directions(State), ItemsToTake <- possible_items(State)].
