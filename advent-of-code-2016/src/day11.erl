@@ -40,9 +40,15 @@ solve() ->
   solve([{0, input()}], #{}, undefined).
 
 solve2() ->
-  solve([{0, input2()}], #{}, undefined).
+  State = input2(),
+  PossibleMoves = possible_moves(State),
+  NewStates = [{1, apply_state_change(Move, State)} || Move <- PossibleMoves],
+  FilteredNewStates = [{S, FilteredState} || {S, FilteredState} <- NewStates,
+                       valid_state(FilteredState)],
+  [spawn(?MODULE, solve, [[NextState], add_visited([NextState], #{}), undefined]) || NextState <- FilteredNewStates].
 
 solve([], _, Min) ->
+  io:format("Min ~p~n", [Min]),
   Min;
 solve([{Steps, _State} | Rest], Visited, Min) when Min =/= undefined,
                                                    Min < Steps ->
