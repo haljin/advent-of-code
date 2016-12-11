@@ -9,61 +9,86 @@
                          {4, []}]}).
 
 test_input() ->
-  #state{items = [{1, [{microchip, hydrogen}, {microchip, lithium}]},
-                  {2, [{generator, hydrogen}]},
+  #state{items = [{1, [{microchip, hydrogen}, {microchip, lithium}, {microchip, thulium}, {microchip, promethium}]},
+                  {2, [{generator, hydrogen}, {generator, thulium}, {generator, promethium}]},
                   {3, [{generator, lithium}]},
                   {4, []}]}.
 input() ->
   #state{items = [{1, lists:sort([{generator, polonium},
-                       {generator, thulium}, {microchip, thulium},
-                       {generator, promethium}, {generator, ruthenium},
-                       {microchip, ruthenium}, {generator, cobalt}, {microchip, cobalt}])},
+                                  {generator, thulium}, {microchip, thulium},
+                                  {generator, promethium}, {generator, ruthenium},
+                                  {microchip, ruthenium}, {generator, cobalt}, {microchip, cobalt}])},
+                  {2, lists:sort([{microchip, polonium}, {microchip, promethium}])},
+                  {3, []},
+                  {4, []}]}.
+
+input2() ->
+  #state{items = [{1, lists:sort([{generator, polonium},
+                                  {generator, thulium}, {microchip, thulium},
+                                  {generator, promethium}, {generator, ruthenium},
+                                  {microchip, ruthenium}, {generator, cobalt}, {microchip, cobalt},
+                                  {generator, elerium}, {microchip, elerium},
+                                  {generator, dilithium}, {microchip, dilithium}])},
                   {2, lists:sort([{microchip, polonium}, {microchip, promethium}])},
                   {3, []},
                   {4, []}]}.
 
 test() ->
-  solve([{0, test_input()}], [], undefined).
+  solve([{0, test_input()}], #{}, undefined).
 
 solve() ->
-  solve([{0, input()}], [], undefined).
+  solve([{0, input()}], #{}, undefined).
+
+solve2() ->
+  solve([{0, input2()}], #{}, undefined).
 
 solve([], _, Min) ->
   Min;
 solve([{Steps, _State} | Rest], Visited, Min) when Min =/= undefined,
-                                                  Min < Steps ->
+                                                   Min < Steps ->
   solve(Rest, Visited, Min);
 solve([{Steps, State} | Rest], Visited, Min) ->
-  io:format("Now investigating ~p length of Visited: ~p ~n", [Steps, length(Visited)]),
   case {is_final(State), Min} of
     {true, undefined} ->
-      io:format("Found new minimum ~p~n", [Steps]),
       solve(Rest, Visited, Steps);
     {true, Min} ->
-      io:format("Found new minimum ~p~n", [Steps]),
       solve(Rest, Visited, min(Min, Steps));
     {false, _} ->
       PossibleMoves = possible_moves(State),
       NewStates = [{Steps + 1, apply_state_change(Move, State)} || Move <- PossibleMoves],
       FilteredNewStates = [{S, FilteredState} || {S, FilteredState} <- NewStates,
                            valid_state(FilteredState) andalso
-                           not lists:any(fun({PrevStep, PrevState}) -> FilteredState == PrevState andalso PrevStep < Steps + 1 end, Visited)],
-%%      JustStates = [JS || {_, JS} <- FilteredNewStates],
-      solve(FilteredNewStates ++ Rest, FilteredNewStates ++ Visited, Min)
+                           check_prev(Visited, {Steps + 1, FilteredState})],
+      solve(Rest ++ FilteredNewStates, add_visited(FilteredNewStates, Visited), Min)
   end.
 
 is_final(#state{items = Items}) ->
   lists:keyfind(3, 1, Items) =:= {3, []} andalso
-    lists:keyfind(2, 1, Items) =:= {2, []} andalso
+  lists:keyfind(2, 1, Items) =:= {2, []} andalso
     lists:keyfind(1, 1, Items) =:= {1, []}.
 
+check_prev(Map, {CurStep, CurState}) ->
+  case maps:find(CurState, Map) of
+    error -> true;
+    PrevStep -> PrevStep =< CurStep
+  end.
+
+add_visited([{Steps, State} | Rest], Map) ->
+  add_visited(Rest, maps:put(State, Steps, Map));
+add_visited([], Map) ->
+  Map.
+
 valid_state(#state{items = Items}) ->
-  lists:all(fun({_F, ItemsOnFloor}) ->
-    Microchips = [M || {microchip, M} <- ItemsOnFloor],
-    Generators = [G || {generator, G} <- ItemsOnFloor],
-    Generators =:= [] orelse
-    lists:all(fun(Element) -> lists:member(Element, Generators) end, Microchips)
-            end, Items).
+  valid_state(Items);
+valid_state([]) ->
+  true;
+valid_state([{_Floor, ItemsOnFloor} | Rest]) ->
+  Generators = [G || {generator, G} <- ItemsOnFloor],
+  Check = Generators =:= [] orelse [] == [M || {microchip, M} <- ItemsOnFloor, not lists:member(M, Generators)],
+  case Check of
+    false -> false;
+    true -> valid_state(Rest)
+  end.
 
 apply_state_change({Direction, ItemsToTake}, #state{floor = Floor, items = Items} = State) ->
   {_, ItemsOnFloor} = lists:keyfind(Floor, 1, Items),
