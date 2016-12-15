@@ -8,7 +8,7 @@
               index,
               confirmation_index}).
 
-input() -> "abc".
+input() -> "ahsbgdzn".
 
 solve() ->
   solve(0, input(), [], [], fun erlang:md5/1).
@@ -19,7 +19,7 @@ solve2() ->
 solve(N, Salt, PossibleKeys, CorrectKeys, HashGen) when length(CorrectKeys) < 64 ->
   Key = HashGen(Salt ++ integer_to_list(N)),
   {NewCorrectKeys, NewPossibleKeys} = check_possible_keys(Key, PossibleKeys, [], CorrectKeys),
-  case is_possible_key(erlang:md5(Salt ++ integer_to_list(N))) of
+  case is_possible_key(Key) of
     false -> solve(N + 1, Salt, NewPossibleKeys, NewCorrectKeys, HashGen);
     {true, C} -> solve(N + 1, Salt, [#key{key = Key, character = C, index = N} | NewPossibleKeys], NewCorrectKeys, HashGen)
   end;
