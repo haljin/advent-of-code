@@ -47,13 +47,15 @@ elf_proc(ElfId, LeftElf, RightElf, Gifts, MaxGifts) ->
 %%      io:format("Elf ~p: I'm at ~p and my neighbours are left: ~p right:~p~n", [ElfId, self(), NewLeftElf, RightElf]),
       elf_proc(ElfId, NewLeftElf, RightElf, Gifts, MaxGifts);
     your_turn ->
+%%      io:format("Elf ~p: I am gonna kill someone! :)~n", [ElfId]),
       LeftElf ! get_gifts,
       receive
         {gifts, MoreGifts, NewLeftElf} ->
-          RightElf ! your_turn,
+          NewLeftElf ! your_turn,
           elf_proc(ElfId, NewLeftElf, RightElf, Gifts + MoreGifts, MaxGifts)
       end;
     get_gifts ->
+%%      io:format("Elf ~p: I am dead :(~n", [ElfId]),
       LeftElf ! {right, RightElf},
       RightElf ! {gifts, Gifts, LeftElf}
   end.
