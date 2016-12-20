@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
-input() -> 3012603.
+input() -> 3014603.
 
 test_input() -> 5.
 
