@@ -3,3 +3,5 @@
 ebin
 *.iml
 deps
+_build
+rebar.lock
