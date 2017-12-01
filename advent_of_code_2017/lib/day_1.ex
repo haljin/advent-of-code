@@ -52,7 +52,10 @@ defmodule AdventOfCode2017.Day1 do
     Enum.map(&String.to_integer/1) |>
     do_solve((div String.length(input), 2))
   end
-  
+
+  # -------------------------------------------------------------------
+  # Internal functions
+  # -------------------------------------------------------------------
   defp do_solve(digits, steps) do
     do_solve(steps, digits, digits, 0)
   end
