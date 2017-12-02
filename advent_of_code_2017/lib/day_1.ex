@@ -28,7 +28,7 @@ defmodule AdventOfCode2017.Day1 do
   end
 
   @doc """
-  Solves the second riddle of day . 
+  Solves the second riddle of day 1. 
   Examples:
 
       iex> AdventOfCode2017.Day1.solve2("1212")
