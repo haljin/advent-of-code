@@ -18,7 +18,6 @@ defmodule AdventOfCode2017.Day1 do
 
       iex> AdventOfCode2017.Day1.solve("91212129")
       9
-
   """
   def solve(input) do
     input |>

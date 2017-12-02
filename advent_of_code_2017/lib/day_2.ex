@@ -12,16 +12,9 @@ defmodule AdventOfCode2017.Day2 do
       ...> 7 5 3
       ...> 2 4 6 8")
       18
-      
-
   """
   def solve(input) do
-    input |>
-    String.split("\n") |>
-    Enum.filter(&(&1 != "")) |>
-    Enum.map(&split_row/1) |>
-    Enum.map(&(Enum.max(&1) - Enum.min(&1))) |>
-    Enum.sum    
+    do_solve(input, &(Enum.max(&1) - Enum.min(&1)))
   end
 
   @doc """
@@ -33,21 +26,23 @@ defmodule AdventOfCode2017.Day2 do
       ...> 9 4 7 3
       ...> 3 8 6 5")
       9
-
-
   """
   def solve2(input) do
-    input |>
-    String.split("\n") |>
-    Enum.filter(&(&1 != "")) |>
-    Enum.map(&split_row/1) |>
-    Enum.map(&find_div/1) |>
-    Enum.sum    
+    do_solve(input, &find_div/1)
   end
 
   # -------------------------------------------------------------------
   # Internal functions
   # -------------------------------------------------------------------
+  defp do_solve(input, function) do
+    input |>
+    String.split("\n") |>
+    Enum.filter(&(&1 != "")) |>
+    Enum.map(&split_row/1) |>
+    Enum.map(function) |>
+    Enum.sum  
+  end
+
   defp split_row(row) do
     row |>
     String.trim |>
