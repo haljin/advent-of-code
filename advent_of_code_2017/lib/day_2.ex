@@ -20,7 +20,8 @@ defmodule AdventOfCode2017.Day2 do
     String.split("\n") |>
     Enum.filter(&(&1 != "")) |>
     Enum.map(&split_row/1) |>
-    do_solve(&(Enum.max(&1) - Enum.min(&1)))
+    Enum.map(&(Enum.max(&1) - Enum.min(&1))) |>
+    Enum.sum    
   end
 
   @doc """
@@ -40,7 +41,8 @@ defmodule AdventOfCode2017.Day2 do
     String.split("\n") |>
     Enum.filter(&(&1 != "")) |>
     Enum.map(&split_row/1) |>
-    do_solve(&find_div/1)
+    Enum.map(&find_div/1) |>
+    Enum.sum    
   end
 
   # -------------------------------------------------------------------
@@ -59,11 +61,5 @@ defmodule AdventOfCode2017.Day2 do
       nil -> find_div(rest)
       _ -> div max(element, value), min(element, value)
     end
-  end
-
-  defp do_solve(sheet, function) do
-    sheet |>
-    Enum.map(function) |>
-    Enum.sum    
   end
 end
