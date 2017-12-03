@@ -92,9 +92,9 @@ defmodule AdventOfCode2017.Day3 do
   defp build_neighbour_sum_fun(spiralMap, solution) do
     fn(curX, curY) ->
       mySum =
-      (for x <- (curX - 1)..(curX + 1), y <- (curY - 1)..(curY + 1), do: spiralMap[{x, y}]) |>
-      Enum.filter(&(&1 != nil)) |>
-      Enum.sum
+      (for x <- (curX - 1)..(curX + 1), y <- (curY - 1)..(curY + 1), do: spiralMap[{x, y}]) 
+      |> Enum.filter(&(&1 != nil)) 
+      |> Enum.sum
       if mySum > solution do
         {:done, mySum}
       else
