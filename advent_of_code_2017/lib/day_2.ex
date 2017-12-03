@@ -14,7 +14,7 @@ defmodule AdventOfCode2017.Day2 do
       18
   """
   def solve(input) do
-    do_solve(input, &(Enum.max(&1) - Enum.min(&1)))
+    do_solve(input, &(&2 + (Enum.max(&1) - Enum.min(&1))))
   end
 
   @doc """
@@ -28,7 +28,7 @@ defmodule AdventOfCode2017.Day2 do
       9
   """
   def solve2(input) do
-    do_solve(input, &find_div/1)
+    do_solve(input, &find_div/2)
   end
 
   # -------------------------------------------------------------------
@@ -39,8 +39,7 @@ defmodule AdventOfCode2017.Day2 do
     String.split("\n") |>
     Enum.filter(&(&1 != "")) |>
     Enum.map(&split_row/1) |>
-    Enum.map(function) |>
-    Enum.sum  
+    Enum.reduce(0, function) 
   end
 
   defp split_row(row) do
@@ -50,11 +49,11 @@ defmodule AdventOfCode2017.Day2 do
     Enum.map(&String.to_integer/1)
   end
 
-  def find_div([element | rest]) do
+  def find_div([element | rest], acc) do
     value = Enum.find(rest, &((rem(&1, element) == 0) or (rem(element, &1) == 0)))
     case value do
-      nil -> find_div(rest)
-      _ -> div max(element, value), min(element, value)
+      nil -> find_div(rest, acc)
+      _ -> acc + div(max(element, value), min(element, value))
     end
   end
 end
