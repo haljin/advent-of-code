@@ -20,7 +20,7 @@ defmodule AdventOfCode2017.Day3 do
       31
   """
   def solve(input) do
-    build_spiral(:left, {0, 0}, {1, -1, 1, -1}, build_path_fun(1, input)) #&path_fun/3, {1, input})
+    build_spiral(:left, {0, 0}, {1, -1, 1, -1}, build_path_fun(1, input))
   end
 
   @doc """
