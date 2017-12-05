@@ -45,11 +45,10 @@ defmodule AdventOfCode2017.Day5 do
   # Internal functions
   # -------------------------------------------------------------------
   defp parse_data(input) do
-    numbers = 
     input
     |> String.split
     |> Enum.map(&String.to_integer/1)
-    Enum.zip(1..length(numbers), numbers)
+    |> (fn list -> Enum.zip(1..length(list), list) end).()
     |> Enum.into(%{})
   end
   
