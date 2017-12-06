@@ -48,8 +48,8 @@ defmodule AdventOfCode2017.Day5 do
     input
     |> String.split
     |> Enum.map(&String.to_integer/1)
-    |> (fn list -> Enum.zip(1..length(list), list) end).()
-    |> Enum.into(%{})
+    |> Enum.with_index(1)
+    |> Enum.into(%{}, fn {v, k} -> {k, v} end)
   end
   
   defp move_on_list(map, position, step) do
