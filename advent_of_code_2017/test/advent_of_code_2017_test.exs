@@ -7,6 +7,7 @@ defmodule AdventOfCode2017Test do
   alias AdventOfCode2017.Day6
   alias AdventOfCode2017.Day7
   alias AdventOfCode2017.Day8
+  alias AdventOfCode2017.Day9
   use ExUnit.Case
 
   doctest Day1
@@ -17,6 +18,7 @@ defmodule AdventOfCode2017Test do
   doctest Day6
   doctest Day7
   doctest Day8
+  doctest Day9
 
   test "Real solutions for day 1" do
     data = "649713959682898259577777982349515784822684939966191359164369933435366431847754488661965363557985166219358714739318371382388296151195361571216131925158492441461844687324923315381358331571577613789649" <>
@@ -88,5 +90,11 @@ defmodule AdventOfCode2017Test do
     {:ok, input} = File.read("priv/day8data") 
     5966 = Day8.solve(input)
     6347 = Day8.solve2(input)
+  end
+
+  test "Real solutions for Day 9" do
+    {:ok, input} = File.read("priv/day9data") 
+    17390 = Day9.solve(input)
+    7825 = Day9.solve2(input)
   end
 end
