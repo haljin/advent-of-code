@@ -57,8 +57,8 @@ defmodule AdventOfCode2017.Day10 do
   def knot_it([curLen | lengths], elements, curPos, skipSize) do
     {start, mid} = Enum.split(elements, curPos)
     newElems = 
-    Enum.reverse_slice(mid ++ start, curPos - length(start), curLen) 
-    |> Enum.split(- length(start))
+    Enum.reverse_slice(mid ++ start, 0, curLen) 
+    |> Enum.split(-curPos)
     |> (fn {a, b} -> b ++ a end).()
     knot_it(lengths, newElems, move_pos(curPos, Enum.count(elements), curLen + skipSize), skipSize + 1)
   end
@@ -66,8 +66,7 @@ defmodule AdventOfCode2017.Day10 do
     {elements, curPos, curLen}
   end
 
-  defp move_pos(curPos, elemLen, move) when move > elemLen, do: move_pos(curPos, elemLen, move - elemLen)
+  defp move_pos(curPos, elemLen, move) when move > elemLen, do: move_pos(curPos, elemLen, rem(move, elemLen))
   defp move_pos(curPos, elemLength, move) when (curPos + move) < elemLength, do: curPos + move
   defp move_pos(curPos, elemLen, move), do: move - (elemLen - curPos)
-
 end
