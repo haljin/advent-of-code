@@ -54,15 +54,15 @@ defmodule AdventOfCode2017.Day10 do
   # -------------------------------------------------------------------
   # Internal functions
   # -------------------------------------------------------------------
-  def knot_it([curLen | lengths], elements, curPos, skipSize) do
-    {start, mid} = Enum.split(elements, curPos)
+  defp knot_it([curLen | lengths], elements, curPos, skipSize) do
     newElems = 
-    Enum.reverse_slice(mid ++ start, 0, curLen) 
+    Enum.split(elements, curPos)
+    |> (fn {a, b} -> Enum.reverse_slice(b ++ a, 0, curLen)  end).()
     |> Enum.split(-curPos)
-    |> (fn {a, b} -> b ++ a end).()
+    |> (fn {b, a} -> a ++ b end).()
     knot_it(lengths, newElems, move_pos(curPos, Enum.count(elements), curLen + skipSize), skipSize + 1)
   end
-  def knot_it([], elements, curPos, curLen) do
+  defp knot_it([], elements, curPos, curLen) do
     {elements, curPos, curLen}
   end
 
