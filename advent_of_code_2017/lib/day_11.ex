@@ -23,7 +23,7 @@ defmodule AdventOfCode2017.Day11 do
     input
     |> String.split(",")
     |> Enum.map(&String.to_atom/1)
-    |> go(0, 0, 0)
+    |> go
     |> elem(0)
     |> hex_dist
   end
@@ -35,7 +35,7 @@ defmodule AdventOfCode2017.Day11 do
     input
     |> String.split(",")
     |> Enum.map(&String.to_atom/1)
-    |> go(0, 0, 0)
+    |> go
     |> elem(1)
   end
 
@@ -44,12 +44,12 @@ defmodule AdventOfCode2017.Day11 do
   # ------------------------------------------------------------------
   defp hex_dist({ax, ay, az}, {bx, by, bz} \\ {0, 0, 0}), do: Enum.max([abs(ax - bx), abs(ay - by), abs(az - bz)])
 
-  defp go(steps, x, y, z, furthest \\ 0)
-  defp go([], x, y, z, furthest), do: {{x, y, z}, furthest}
-  defp go([:n | rest], x, y, z, furthest), do: go(rest, x, y + 1, z - 1, max(furthest, hex_dist({x, y, z})))
-  defp go([:s | rest], x, y, z, furthest), do: go(rest, x, y - 1, z + 1, max(furthest, hex_dist({x, y, z})))
-  defp go([:ne | rest], x, y, z, furthest), do: go(rest, x + 1, y, z - 1, max(furthest, hex_dist({x, y, z})))
-  defp go([:sw | rest], x, y, z, furthest), do: go(rest, x - 1, y, z + 1, max(furthest, hex_dist({x, y, z})))
-  defp go([:nw | rest], x, y, z, furthest), do: go(rest, x - 1, y + 1, z, max(furthest, hex_dist({x, y, z})))
-  defp go([:se | rest], x, y, z, furthest), do: go(rest, x + 1, y - 1, z, max(furthest, hex_dist({x, y, z})))
+  defp go(steps, coords \\ {0, 0, 0}, furthest \\ 0)
+  defp go([], {x, y, z}, furthest), do: {{x, y, z}, furthest}
+  defp go([:n | rest], {x, y, z}, furthest), do: go(rest, {x, y + 1, z - 1}, max(furthest, hex_dist({x, y, z})))
+  defp go([:s | rest], {x, y, z}, furthest), do: go(rest, {x, y - 1, z + 1}, max(furthest, hex_dist({x, y, z})))
+  defp go([:ne | rest], {x, y, z}, furthest), do: go(rest, {x + 1, y, z - 1}, max(furthest, hex_dist({x, y, z})))
+  defp go([:sw | rest], {x, y, z}, furthest), do: go(rest, {x - 1, y, z + 1}, max(furthest, hex_dist({x, y, z})))
+  defp go([:nw | rest], {x, y, z}, furthest), do: go(rest, {x - 1, y + 1, z}, max(furthest, hex_dist({x, y, z})))
+  defp go([:se | rest], {x, y, z}, furthest), do: go(rest, {x + 1, y - 1, z}, max(furthest, hex_dist({x, y, z})))
 end
