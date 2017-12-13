@@ -17,7 +17,7 @@ defmodule AdventOfCode2017.Day13 do
     input
     |> parse
     |> create_layer(0, [])
-    |> move(0)
+    |> move
   end
 
   @doc """
@@ -49,43 +49,34 @@ defmodule AdventOfCode2017.Day13 do
 
   defp create_layer([], _, layers), do: layers
   defp create_layer([{layerIndex, layerRange} | restLayers], layerIndex, layers) do
-    create_layer(restLayers, layerIndex + 1, layers ++ [%{index: layerIndex, range: layerRange, scannerPos: 1, scannerDirection: :down}])
+    create_layer(restLayers, layerIndex + 1, layers ++ [%{index: layerIndex, range: layerRange}])
   end
   defp create_layer(restLayers, layerIndex, layers) do
     create_layer(restLayers, layerIndex + 1, layers ++ [%{index: layerIndex, range: :empty}])
   end
 
-  defp move([], severity), do: severity
-  defp move([%{range: :empty} | restLayers], severity) do
-    scannersMoved = Enum.map(restLayers, &move_scanner/1)
-    move(scannersMoved, severity)
+  defp move(layers, severity \\ 0, time \\ 0)
+  defp move([], severity, _time), do: severity
+  defp move([%{range: :empty} | restLayers], severity, time) do
+    move(restLayers, severity, time + 1)
   end
-  defp move([%{scannerPos: 1, range: range, index: index} | restLayers], severity) do
-    scannersMoved = Enum.map(restLayers, &move_scanner/1)
-    move(scannersMoved, severity + index * range)    
+  defp move([%{range: range, index: index} | restLayers], severity, time) when rem(time, ((range - 1) *2)) == 0 do
+    move(restLayers, severity + index * range, time + 1)    
   end
-  defp move([_safeLayer | restLayers], severity) do
-    scannersMoved = Enum.map(restLayers, &move_scanner/1)
-    move(scannersMoved, severity)
+  defp move([_safeLayer | restLayers], severity, time) do
+    move(restLayers, severity, time + 1)
   end
 
-  defp move_uncaught([]), do: :success
-  defp move_uncaught([%{scannerPos: 1} | _restLayers]), do: :caught
-  defp move_uncaught([_safeLayer | restLayers]) do
-    scannersMoved = Enum.map(restLayers, &move_scanner/1)
-    move_uncaught(scannersMoved)
+  defp move_uncaught([], _time), do: :success
+  defp move_uncaught([%{range: range} | _restLayers], time) when rem(time, ((range - 1) *2)) == 0, do: :caught
+  defp move_uncaught([_safeLayer | restLayers], time) do
+    move_uncaught(restLayers, time + 1)
   end
 
   defp try_move(layers, delay \\ 0) do
-    case move_uncaught(layers) do
+    case move_uncaught(layers, delay) do
       :success -> delay
-      :caught -> try_move(Enum.map(layers, &move_scanner/1), delay + 1)
+      :caught -> try_move(layers, delay + 1)
     end
   end
-
-  defp move_scanner(%{scannerPos: 1} = layer), do: %{layer | scannerPos: 2, scannerDirection: :down} 
-  defp move_scanner(%{scannerPos: range, range: range} = layer), do: %{layer | scannerPos: range - 1, scannerDirection: :up}
-  defp move_scanner(%{scannerPos: scannerPos, scannerDirection: :down} = layer), do: %{layer | scannerPos: scannerPos + 1, scannerDirection: :down}
-  defp move_scanner(%{scannerPos: scannerPos, scannerDirection: :up} = layer), do: %{layer | scannerPos: scannerPos - 1, scannerDirection: :up}
-  defp move_scanner(emptyLayer), do: emptyLayer
 end
