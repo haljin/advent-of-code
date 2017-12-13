@@ -124,7 +124,7 @@ defmodule AdventOfCode2017Test do
     179 = Day12.solve2(input)
   end
   
-  @tag timeout: 120000
+  @tag timeout: 180000
   test "Real solutions for Day 13" do
     {:ok, input} = File.read("priv/day13data")
     3184 = Day13.solve(input)

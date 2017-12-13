@@ -69,45 +69,17 @@ defmodule AdventOfCode2017.Day13 do
     move(scannersMoved, severity)
   end
 
-  def move_uncaught([]), do: :success
-  def move_uncaught([%{scannerPos: 1} | _restLayers]), do: :caught
-  def move_uncaught([_safeLayer | restLayers]) do
+  defp move_uncaught([]), do: :success
+  defp move_uncaught([%{scannerPos: 1} | _restLayers]), do: :caught
+  defp move_uncaught([_safeLayer | restLayers]) do
     scannersMoved = Enum.map(restLayers, &move_scanner/1)
     move_uncaught(scannersMoved)
   end
 
-  defp try_move(layers) do
-    host = self()
-    Enum.map(0..9, 
-      fn (step) ->
-        spawn(
-          fn -> 
-            layersForStep = Enum.reduce(0..step, layers, fn (0, acc) -> acc; (_, acc) -> Enum.map(acc, &move_scanner/1) end)
-            send(host, {step, move_uncaught(layersForStep), layersForStep})
-          end)
-      end)
-    |> Enum.count
-    |> collect_results([])    
-  end
-  
-  defp collect_results(pids, results) do
-    host = self()
-    receive do
-      {step, :success, _} -> success_found(pids - 1, [step | results])
-      {step, :caught, layersForStep} ->
-        spawn(fn ->
-          compute = Enum.reduce(1..10, layersForStep, fn (_, acc) -> Enum.map(acc, &move_scanner/1) end)
-          send(host, {step + 10, move_uncaught(compute), compute})
-        end)
-        collect_results(pids, results)      
-    end
-  end
-  
-  defp success_found(0, results), do: Enum.min(results)
-  defp success_found(pids, results) do
-    receive do
-      {step, :success, _} -> success_found(pids - 1, [step | results])
-      {_step, :caught, _layersForStep} -> success_found(pids - 1, results)    
+  defp try_move(layers, delay \\ 0) do
+    case move_uncaught(layers) do
+      :success -> delay
+      :caught -> try_move(Enum.map(layers, &move_scanner/1), delay + 1)
     end
   end
 
