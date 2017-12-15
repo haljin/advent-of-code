@@ -110,6 +110,11 @@ defmodule AdventOfCode2017Test do
   test "Real solutions for Day 14" do
     input = "uugsqrei"
     8194 = Day14.solve(input)
-    nil = Day14.solve2(input)
+    1141 = Day14.solve2(input)
+  end
+  
+  test "Real solutions for Day 15" do
+    567 = Day15.solve(40000000, 512, 191)
+    nil = Day15.solve2(5000000, 512, 191)
   end
 end
