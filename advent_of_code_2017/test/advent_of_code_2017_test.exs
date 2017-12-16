@@ -115,6 +115,12 @@ defmodule AdventOfCode2017Test do
   
   test "Real solutions for Day 15" do
     567 = Day15.solve(40000000, 512, 191)
-    nil = Day15.solve2(5000000, 512, 191)
+    323 = Day15.solve2(5000000, 512, 191)
+  end
+  
+  test "Real solutions for Day 16" do
+    {:ok, input} = File.read("priv/day16data")
+    "lgpkniodmjacfbeh" = Day16.solve(input)
+    "hklecbpnjigoafmd" = Day16.solve2(input)
   end
 end

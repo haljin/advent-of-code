@@ -30,12 +30,6 @@ defmodule AdventOfCode2017.Day15 do
   """
   def solve2(input, startA, startB) do
     gen_picky_step(input, startA, startB, 0)
-    # Process.register(spawn(__MODULE__, :judge_proc, [input, [], [], 0, self()]), :judge)
-    # spawn(__MODULE__, :gen_proc, [:a, 16807, 4, startA])
-    # spawn(__MODULE__, :gen_proc, [:b, 48271, 8, startB])
-    # receive do
-    #   {:score, score} -> score
-    # end
   end
 
   # -------------------------------------------------------------------
