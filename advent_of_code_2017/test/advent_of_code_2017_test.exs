@@ -133,6 +133,12 @@ defmodule AdventOfCode2017Test do
   test "Real solutions for Day 18" do
     {:ok, input} = File.read("priv/day18data")
     2951 = Day18.solve(input)
-    nil = Day18.solve2(input)
+    7366 = Day18.solve2(input)
+  end
+  
+  test "Real solutions for Day 19" do
+    {:ok, input} = File.read("priv/day19data")
+    "MKXOIHZNBL" = Day19.solve(input)
+    17872 = Day19.solve2(input)
   end
 end
