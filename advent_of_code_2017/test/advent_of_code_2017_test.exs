@@ -141,4 +141,16 @@ defmodule AdventOfCode2017Test do
     "MKXOIHZNBL" = Day19.solve(input)
     17872 = Day19.solve2(input)
   end
+  
+  test "Real solutions for Day 20" do
+    {:ok, input} = File.read("priv/day20data")
+    364 = Day20.solve(input)
+    420 = Day20.solve2(input)
+  end
+  
+  test "Real solutions for Day 21" do
+    {:ok, input} = File.read("priv/day21data")
+    144 = Day21.solve(input)
+    2169301 = Day21.solve2(input)
+  end
 end
