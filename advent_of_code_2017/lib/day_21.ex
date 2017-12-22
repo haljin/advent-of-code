@@ -100,13 +100,11 @@ defmodule AdventOfCode2017.Day21 do
             realMapY = y * chunkSize + yIndex
             Map.put(morePartialMap, realMapY, Map.put(morePartialMap[realMapY], realMapX, chunk[yIndex][xIndex]))
           end)
-        end)
+      end)
     dechunk_map([restRow | rest], x + 1, y, newMap)
   end
 
-  defp build_empty_map(size) do
-    Enum.into(0..(size - 1), %{}, fn y -> {y, Enum.into(0..(size - 1), %{}, fn x-> {x, nil} end)} end)
-  end
+  defp build_empty_map(size), do: Enum.into(0..(size - 1), %{}, fn y -> {y, %{}} end)
 
   defp flip_map_y(map) do
     for y <- 0..(map_size(map) - 1), into: %{}, do: {y, map[map_size(map) - y - 1]}
@@ -116,7 +114,6 @@ defmodule AdventOfCode2017.Day21 do
       {y, (for x <- 0..(map_size(map) - 1), into: %{}, do: {x, map[y][map_size(map) - x - 1]})}
     end
   end
-
   defp rotate_map(map) do
     for y <- 0..(map_size(map) - 1), into: %{} do
       {y, for x <- 0..(map_size(map) - 1), into: %{} do {x, map[x][map_size(map) - y - 1]} end}
