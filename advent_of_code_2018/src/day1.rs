@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -22,16 +22,16 @@ pub fn solve(data: Vec<i64>) -> i64 {
 
 pub fn solve2(data: Vec<i64>) -> i64 {
     let mut cycling = data.iter().cycle();
-    let mut seen = HashMap::new();
+    let mut seen = HashSet::new();
     let mut freq = 0;
 
     while let Some(val) = cycling.next() {
-        seen.insert(freq, true);
+        seen.insert(freq);
         freq = freq + val;
         if let Some(_v) = seen.get(&freq) {
             return freq;
         }
-        seen.insert(freq, true);
+        seen.insert(freq);
     }
     panic!("cannot find duplicate")
 }
