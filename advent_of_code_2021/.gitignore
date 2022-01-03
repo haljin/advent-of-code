@@ -38,7 +38,5 @@ Thumbs.db
 dist/**/*
 build/**/*
 
-# ignore yarn.lock
-yarn.lock
-
 log
+.vscode
