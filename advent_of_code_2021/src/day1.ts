@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 
-function calculateFuel(value: number) {
+export function calculateFuel(value: number) {
   return Math.floor(value / 3) - 2;
 }
 
