@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 
 export function processCommand(index: number, program : number[]) {
   const newProgram = program;
-  switch (program[index]) {
+  switch (newProgram[index]) {
     case 99:
       return { next: -1, program };
     case 1:
