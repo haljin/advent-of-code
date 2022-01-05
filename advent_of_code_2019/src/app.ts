@@ -3,6 +3,7 @@ import { day1Solve } from './day1';
 import { day2Solve } from './day2';
 import { day3Solve } from './day3';
 import { day4Solve } from './day4';
+import { day5Solve } from './day5';
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.get('/day3', (_req: any, res: any) => {
 });
 app.get('/day4', (_req: any, res: any) => {
   res.send(day4Solve());
+});
+app.get('/day5', (_req: any, res: any) => {
+  res.send(day5Solve());
 });
 
 export default app;

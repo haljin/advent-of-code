@@ -1,32 +1,5 @@
 import { readFileSync } from 'fs';
-
-export function processCommand(index: number, program : number[]) {
-  const newProgram = program;
-  switch (newProgram[index]) {
-    case 99:
-      return { next: -1, program };
-    case 1:
-      newProgram[program[index + 3]] = program[program[index + 1]] + program[program[index + 2]];
-      return { next: index + 4, program: newProgram };
-    case 2:
-      newProgram[program[index + 3]] = program[program[index + 1]] * program[program[index + 2]];
-      return { next: index + 4, program: newProgram };
-    default:
-      throw new Error('Unexpected opcode');
-  }
-}
-
-export function runProgram(program: number[]) {
-  let index = 0;
-  let runningProgram = program;
-  do {
-    const result = processCommand(index, runningProgram);
-    index = result.next;
-    runningProgram = result.program;
-  }
-  while (index !== -1);
-  return program;
-}
+import { runProgram } from './computer';
 
 function findTerms(program: number[]) {
   for (let noun = 0; noun <= 99; noun += 1) {

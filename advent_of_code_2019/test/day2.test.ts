@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { runProgram } from '../src/day2';
+import { runProgram } from '../src/computer';
 import app from '../src/app';
 
 describe('Processing programs', () => {

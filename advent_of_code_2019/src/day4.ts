@@ -44,7 +44,7 @@ export function day4Solve() {
   let matchesStrict = 0;
   for (let i = +data[0]; i <= +data[1]; i += 1) {
     if (checkPasswordStrict(i.toString())) {
-      console.log(i); matchesStrict += 1;
+      matchesStrict += 1;
     }
   }
 
