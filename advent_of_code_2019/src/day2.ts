@@ -54,10 +54,7 @@ export function day2Solve() {
   data[2] = 2;
 
   const final = runProgram([...data]);
-
   const { noun, verb } = findTerms(data);
 
   return { solution1: final[0], solution2: 100 * noun + verb };
-
-  // return { solution1, solution2 };
 }
