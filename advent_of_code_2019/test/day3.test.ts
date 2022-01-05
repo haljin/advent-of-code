@@ -36,6 +36,6 @@ describe('GET /day3', () => {
     const res = await request(app).get('/day3');
 
     expect(res.status).toEqual(200);
-    expect(res.body).toEqual({ solution1: 248 });
+    expect(res.body).toEqual({ solution1: 248, solution2: 28580 });
   });
 });
