@@ -33,20 +33,20 @@ export function countAllOrbits(root: Orbit) {
   return countOrbits(root, 0) - 1;
 }
 
-function findPath(root: Orbit, lookingFor: string, pathSoFar: string[]) : null | string[] {
+function findPath(root: Orbit, lookingFor: string, pathSoFar: string[]) : string[] {
   if (root.center === lookingFor) { return pathSoFar; }
-  if (root.bodies.length === 0) return null;
+  if (root.bodies.length === 0) return [];
   const subPaths = root.bodies
     .map((body) => findPath(body, lookingFor, [...pathSoFar, root.center]))
     .filter((emptyPath): emptyPath is string[] => emptyPath !== null);
 
-  if (subPaths.length === 0) return null;
+  if (subPaths.length === 0) return [];
   return subPaths[0];
 }
 
 export function findCommonSubPath(orbits: Orbit) {
-  const path1 = findPath(orbits, 'YOU', [])?.reverse() || [];
-  const path2 = findPath(orbits, 'SAN', [])?.reverse() || [];
+  const path1 = findPath(orbits, 'YOU', []).reverse();
+  const path2 = findPath(orbits, 'SAN', []).reverse();
   const firstCommonIndex = path1.findIndex(
     (elem) => path2.includes(elem),
   );
