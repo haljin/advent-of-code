@@ -47,12 +47,11 @@ function findPath(root: Orbit, lookingFor: string, pathSoFar: string[]) : null |
 export function findCommonSubPath(orbits: Orbit) {
   const path1 = findPath(orbits, 'YOU', [])?.reverse() || [];
   const path2 = findPath(orbits, 'SAN', [])?.reverse() || [];
-  const firstCommonElement = path1.find(
+  const firstCommonIndex = path1.findIndex(
     (elem) => path2.includes(elem),
   );
 
-  return path1.findIndex((el) => el === firstCommonElement)
-  + path2.findIndex((el) => el === firstCommonElement);
+  return firstCommonIndex + path2.findIndex((el) => el === path1[firstCommonIndex]);
 }
 
 export function day6Solve() {
