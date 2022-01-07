@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { runProgram } from './computer';
+import { startProgram } from './computer';
 
 export function day5Solve() {
   const data = readFileSync('data/day5').toString()
@@ -7,10 +7,7 @@ export function day5Solve() {
     .filter((line) => line !== '')
     .map((cmd) => +cmd);
 
-  const output: number[] = [];
-  runProgram([...data], 1, output);
-  const output2: number[] = [];
-  runProgram([...data], 5, output2);
-
+  const { output } = startProgram([...data]).continue(1);
+  const { output: output2 } = startProgram([...data]).continue(5);
   return { solution1: output.at(-1), solution2: output2.at(-1) };
 }

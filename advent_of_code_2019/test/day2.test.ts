@@ -1,17 +1,17 @@
 import request from 'supertest';
-import { runProgram } from '../src/computer';
+import { startProgram } from '../src/computer';
 import app from '../src/app';
 
 describe('Processing programs', () => {
   it('should match examples', () => {
-    expect(runProgram([1, 0, 0, 0, 99])).toEqual([2, 0, 0, 0, 99]);
-    expect(runProgram([2, 3, 0, 3, 99])).toEqual([2, 3, 0, 6, 99]);
-    expect(runProgram([2, 4, 4, 5, 99, 0])).toEqual([2, 4, 4, 5, 99, 9801]);
-    expect(runProgram([1, 1, 1, 4, 99, 5, 6, 0, 99])).toEqual([30, 1, 1, 4, 2, 5, 6, 0, 99]);
-    expect(runProgram([1, 9, 10, 3,
+    expect(startProgram([1, 0, 0, 0, 99])).toHaveProperty('program', [2, 0, 0, 0, 99]);
+    expect(startProgram([2, 3, 0, 3, 99])).toHaveProperty('program', [2, 3, 0, 6, 99]);
+    expect(startProgram([2, 4, 4, 5, 99, 0])).toHaveProperty('program', [2, 4, 4, 5, 99, 9801]);
+    expect(startProgram([1, 1, 1, 4, 99, 5, 6, 0, 99])).toHaveProperty('program', [30, 1, 1, 4, 2, 5, 6, 0, 99]);
+    expect(startProgram([1, 9, 10, 3,
       2, 3, 11, 0,
       99,
-      30, 40, 50])).toEqual([3500, 9, 10, 70,
+      30, 40, 50])).toHaveProperty('program', [3500, 9, 10, 70,
       2, 3, 11, 0,
       99,
       30, 40, 50]);

@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { runProgram } from './computer';
+import { startProgram } from './computer';
 
 function findTerms(program: number[]) {
   for (let noun = 0; noun <= 99; noun += 1) {
@@ -7,7 +7,7 @@ function findTerms(program: number[]) {
       const newProgram = [...program];
       newProgram[1] = noun;
       newProgram[2] = verb;
-      runProgram(newProgram);
+      startProgram(newProgram);
       if (newProgram[0] === 19690720) {
         return { noun, verb };
       }
@@ -26,8 +26,8 @@ export function day2Solve() {
   data[1] = 12;
   data[2] = 2;
 
-  const final = runProgram([...data]);
+  const final = startProgram([...data]);
   const { noun, verb } = findTerms(data);
 
-  return { solution1: final[0], solution2: 100 * noun + verb };
+  return { solution1: final.program[0], solution2: 100 * noun + verb };
 }

@@ -1,10 +1,10 @@
 import request from 'supertest';
-import { runProgram } from '../src/computer';
+import { startProgram } from '../src/computer';
 import app from '../src/app';
 
 describe('Checking passwords', () => {
   it('should match examples', () => {
-    expect(runProgram([1002, 4, 3, 4, 33])).toEqual([1002, 4, 3, 4, 99]);
+    expect(startProgram([1002, 4, 3, 4, 33])).toHaveProperty('program', [1002, 4, 3, 4, 99]);
   });
 });
 
