@@ -1,6 +1,6 @@
-interface ProgramState {
+export interface ProgramState {
   index: number,
-  program : number[],
+  program: number[],
   output: number[],
   continue: ((input: number) => ProgramState)
 }
@@ -13,27 +13,27 @@ function getData(command: number, position: number, index: number, program: numb
   return program[program[index + position]];
 }
 
-function processCommand(programState : ProgramState): ProgramState {
+function processCommand(programState: ProgramState): ProgramState {
   const { index, program, output } = programState;
 
   const opcode = program[index];
   const instruction = opcode % 100;
   switch (instruction) {
     case 99:
-    // Halt
+      // Halt
       return { ...programState, index: -1 };
     case 1:
-    // Add
+      // Add
       program[program[index + 3]] = getData(opcode, 1, index, program)
-       + getData(opcode, 2, index, program);
+        + getData(opcode, 2, index, program);
       return { ...programState, index: index + 4 };
     case 2:
-    // Multiply
+      // Multiply
       program[program[index + 3]] = getData(opcode, 1, index, program)
-      * getData(opcode, 2, index, program);
+        * getData(opcode, 2, index, program);
       return { ...programState, index: index + 4 };
     case 3:
-    // Input
+      // Input
       return {
         ...programState,
         index: -2,
@@ -45,23 +45,23 @@ function processCommand(programState : ProgramState): ProgramState {
         },
       };
     case 4:
-    // Output
+      // Output
       output.push(getData(opcode, 1, index, program));
       return { ...programState, index: index + 2 };
     case 5:
-    // JumpIfTrue
+      // JumpIfTrue
       if (getData(opcode, 1, index, program) !== 0) {
         return { ...programState, index: getData(opcode, 2, index, program) };
       }
       return { ...programState, index: index + 3 };
     case 6:
-    // JumpIfFalse
+      // JumpIfFalse
       if (getData(opcode, 1, index, program) === 0) {
         return { ...programState, index: getData(opcode, 2, index, program) };
       }
       return { ...programState, index: index + 3 };
     case 7:
-    // LessThan
+      // LessThan
       if (getData(opcode, 1, index, program) < getData(opcode, 2, index, program)) {
         program[program[index + 3]] = 1;
       } else {
@@ -69,7 +69,7 @@ function processCommand(programState : ProgramState): ProgramState {
       }
       return { ...programState, index: index + 4 };
     case 8:
-    // Equals
+      // Equals
       if (getData(opcode, 1, index, program) === getData(opcode, 2, index, program)) {
         program[program[index + 3]] = 1;
       } else {
@@ -77,6 +77,7 @@ function processCommand(programState : ProgramState): ProgramState {
       }
       return { ...programState, index: index + 4 };
     default:
+      console.log(programState);
       throw new Error(`Unexpected opcode ${opcode}`);
   }
 }
