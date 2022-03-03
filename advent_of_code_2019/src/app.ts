@@ -6,6 +6,8 @@ import { day4Solve } from './day4';
 import { day5Solve } from './day5';
 import { day6Solve } from './day6';
 import { day7Solve } from './day7';
+import { day8Solve } from './day8';
+import { day9Solve } from './day9';
 
 const app = express();
 
@@ -34,6 +36,12 @@ app.get('/day6', (_req: any, res: any) => {
 });
 app.get('/day7', (_req: any, res: any) => {
   res.send(day7Solve());
+});
+app.get('/day8', (_req: any, res: any) => {
+  res.send(day8Solve());
+});
+app.get('/day9', (_req: any, res: any) => {
+  res.send(day9Solve());
 });
 
 export default app;

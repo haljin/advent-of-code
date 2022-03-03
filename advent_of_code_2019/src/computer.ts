@@ -2,21 +2,82 @@ export interface ProgramState {
   index: number,
   program: number[],
   output: number[],
-  continue: ((input: number) => ProgramState)
+  continue: ((input: number) => ProgramState),
+  relativeBase: number
 }
 
-function getData(command: number, position: number, index: number, program: number[]) {
-  const addressMode = command.toString().at(-(position + 2));
-  if (addressMode === '1') {
-    return program[index + position];
+function readMemory(index: number, program: number[]) {
+  const before = program.length;
+  if (index < 0) {
+    console.error({ index, program });
+    throw new Error('wrong');
   }
-  return program[program[index + position]];
+  if (index >= before) {
+    for (let i = 0; i <= (index - before); i += 1) {
+      program.push(0);
+    }
+  }
+  return program[index];
+}
+
+function writeMemory(index: number, data: number, program: number[]) {
+  const before = program.length;
+  const prog = program;
+  if (index < 0) {
+    console.error({ index, program });
+    throw new Error('wrong');
+  }
+  if (index >= before) {
+    for (let i = 0; i <= (index - before); i += 1) {
+      prog.push(0);
+    }
+  }
+  prog[index] = data;
+}
+
+function getData(
+  { program, relativeBase, index }: ProgramState,
+  position: number,
+) {
+  const command = program[index];
+  const addressMode = command.toString().at(-(position + 2));
+  if (addressMode === '2') {
+    // Relative mode
+    return readMemory(relativeBase + readMemory(index + position, program), program);
+  }
+  if (addressMode === '1') {
+    // Immediate mode
+    return readMemory(index + position, program);
+  }
+  // Position mode
+  return readMemory(readMemory(index + position, program), program);
+}
+
+function putData(
+  { program, relativeBase, index }: ProgramState,
+  position: number,
+  data: number,
+) {
+  const command = program[index];
+  const addressMode = command.toString().at(-(position + 2));
+  if (addressMode === '2') {
+    // Relative mode
+    return writeMemory(relativeBase + readMemory(index + position, program), data, program);
+  }
+  if (addressMode === '1') {
+    // Immediate mode
+    return writeMemory(index + position, data, program);
+  }
+  // Position mode
+  return writeMemory(readMemory(index + position, program), data, program);
 }
 
 function processCommand(programState: ProgramState): ProgramState {
-  const { index, program, output } = programState;
+  const {
+    index, program, output, relativeBase,
+  } = programState;
 
-  const opcode = program[index];
+  const opcode = readMemory(index, program);
   const instruction = opcode % 100;
   switch (instruction) {
     case 99:
@@ -24,13 +85,11 @@ function processCommand(programState: ProgramState): ProgramState {
       return { ...programState, index: -1 };
     case 1:
       // Add
-      program[program[index + 3]] = getData(opcode, 1, index, program)
-        + getData(opcode, 2, index, program);
+      putData(programState, 3, getData(programState, 1) + getData(programState, 2));
       return { ...programState, index: index + 4 };
     case 2:
       // Multiply
-      program[program[index + 3]] = getData(opcode, 1, index, program)
-        * getData(opcode, 2, index, program);
+      putData(programState, 3, getData(programState, 1) * getData(programState, 2));
       return { ...programState, index: index + 4 };
     case 3:
       // Input
@@ -38,7 +97,7 @@ function processCommand(programState: ProgramState): ProgramState {
         ...programState,
         index: -2,
         continue: (newInput: number) => {
-          program[program[index + 1]] = newInput;
+          putData(programState, 1, newInput);
           return runProgram({
             ...programState, program, index: index + 2, continue: () => programState,
           });
@@ -46,36 +105,45 @@ function processCommand(programState: ProgramState): ProgramState {
       };
     case 4:
       // Output
-      output.push(getData(opcode, 1, index, program));
+      output.push(getData(programState, 1));
       return { ...programState, index: index + 2 };
     case 5:
       // JumpIfTrue
-      if (getData(opcode, 1, index, program) !== 0) {
-        return { ...programState, index: getData(opcode, 2, index, program) };
+      if (getData(programState, 1) !== 0) {
+        return { ...programState, index: getData(programState, 2) };
       }
       return { ...programState, index: index + 3 };
     case 6:
       // JumpIfFalse
-      if (getData(opcode, 1, index, program) === 0) {
-        return { ...programState, index: getData(opcode, 2, index, program) };
+      if (getData(programState, 1) === 0) {
+        return { ...programState, index: getData(programState, 2) };
       }
       return { ...programState, index: index + 3 };
     case 7:
       // LessThan
-      if (getData(opcode, 1, index, program) < getData(opcode, 2, index, program)) {
-        program[program[index + 3]] = 1;
+      if (getData(programState, 1)
+      < getData(programState, 2)) {
+        putData(programState, 3, 1);
       } else {
-        program[program[index + 3]] = 0;
+        putData(programState, 3, 0);
       }
       return { ...programState, index: index + 4 };
     case 8:
       // Equals
-      if (getData(opcode, 1, index, program) === getData(opcode, 2, index, program)) {
-        program[program[index + 3]] = 1;
+      if (getData(programState, 1)
+      === getData(programState, 2)) {
+        putData(programState, 3, 1);
       } else {
-        program[program[index + 3]] = 0;
+        putData(programState, 3, 0);
       }
       return { ...programState, index: index + 4 };
+    case 9:
+      // Adjust Base
+      return {
+        ...programState,
+        index: index + 2,
+        relativeBase: relativeBase + getData(programState, 1),
+      };
     default:
       console.log(programState);
       throw new Error(`Unexpected opcode ${opcode}`);
@@ -94,7 +162,7 @@ function runProgram(state: ProgramState): ProgramState {
 export function startProgram(program: number[]): ProgramState {
   const output: number[] = [];
   const state: ProgramState = {
-    index: 0, program, output, continue: () => state,
+    index: 0, program, output, continue: () => state, relativeBase: 0,
   };
 
   return runProgram(state);
